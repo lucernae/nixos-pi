@@ -3,6 +3,9 @@
 
   imports = [
     <nixpkgs/nixos/modules/installer/cd-dvd/sd-image-aarch64.nix>
+
+    # For nixpkgs cache
+    <nixpkgs/nixos/modules/installer/cd-dvd/channel.nix>
   ];
 
   sdImage.compressImage = false;

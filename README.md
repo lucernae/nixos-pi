@@ -49,10 +49,10 @@ You need NixOS or just Nix package manager
 You need QEMU ARM if you only have Nix. For example to use it in Ubuntu:
 
 ```bash
-sudo apt -y install qemu qemu-kvm qemu-system-arm qemu-user qemu-user-binfmt
+sudo apt -y install qemu qemu-kvm qemu-system-arm qemu-user qemu-user-static
 ```
 
-Since we are going to run aarch64 binaries inside our x86_64 box, we need qemu-user-binfmt to run aarch64 executable transparently.
+Since we are going to run aarch64 binaries inside our x86_64 box, we need qemu-user-static to run aarch64 executable transparently.
 Check that `binfmt_misc` now support this:
 
 ```bash
