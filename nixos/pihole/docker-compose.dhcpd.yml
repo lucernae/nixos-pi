@@ -1,0 +1,18 @@
+version: "2"
+networks:
+  pihole:
+    ipam:
+      config:
+        - subnet: ${DOCKER_SUBNET}
+# More info at https://github.com/pi-hole/docker-pi-hole/ and https://docs.pi-hole.net/
+services:
+
+  dhcphelper:
+    build: ./dhcp-helper
+    restart: unless-stopped
+    # network_mode: "host"
+    command: -s ${PIHOLE_PRIVATE_ADDRESS}
+    ports: 
+      - "${PIHOLE_DHCPD_EXPOSE_PORT}:67/udp"
+    cap_add:
+      - NET_ADMIN

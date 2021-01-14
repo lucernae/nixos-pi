@@ -1,0 +1,26 @@
+version: "2"
+networks:
+  pihole:
+    ipam:
+      config:
+        - subnet: ${DOCKER_SUBNET}
+# More info at https://github.com/pi-hole/docker-pi-hole/ and https://docs.pi-hole.net/
+services:
+  pihole:
+    networks:
+      pihole:
+        ipv4_address: ${PIHOLE_PRIVATE_ADDRESS}
+  
+  cloudflared:
+    image: crazymax/cloudflared
+    container_name: cloudflared
+    hostname: cloudflared
+    restart: unless-stopped
+    environment:
+      TZ: '${TIMEZONE}'
+      TUNNEL_DNS_UPSTREAM: ${DNS_TUNNEL_DOH}
+    # ports:
+    #   - "${PIHOLE_DOH_EXPOSE_PORT}:5053/udp"
+    networks:
+      pihole:
+        ipv4_address: ${CLOUDFLARED_PRIVATE_ADDRESS}
