@@ -15,8 +15,11 @@ jobs:
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v1
     - name: Test aarch64-linux
-      run: ls -l /proc/sys/fs/binfmt_misc | grep aarch64
-    - run: nix-build '<nixpkgs/nixos>' -A config.system.build.sdImage -I nixos-config=./configuration.default.sdImage.nix --option sandbox false
+      run: |
+        cat /proc/sys/fs/binfmt_misc/qemu-aarch64
+        ls -al /usr/bin/qemu-aarch64
+        /usr/bin/qemu-aarch64 --version
+    - run: nix-build '<nixpkgs/nixos>' -A config.system.build.sdImage -I nixos-config=./configuration.default.sdImage.nix --argstr system aarch64-linux --option sandbox false
     - uses: actions/upload-artifact@v2
       with:
         name: sd-image.img
