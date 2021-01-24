@@ -11,9 +11,11 @@ jobs:
         nix_path: nixpkgs=channel:nixos-20.09
         extra_nix_config: |
           extra-platforms = aarch64-linux
-
+    - run: cat /etc/nix/nix.conf
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v1
+    - name: Test aarch64-linux
+      run: ls -l /proc/sys/fs/binfmt_misc | grep aarch64
     - run: nix-build '<nixpkgs/nixos>' -A config.system.build.sdImage -I nixos-config=./configuration.default.sdImage.nix --option sandbox false
     - uses: actions/upload-artifact@v2
       with:
