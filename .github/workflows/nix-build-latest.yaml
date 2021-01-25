@@ -41,7 +41,7 @@ jobs:
         repo-name: debian-sid
         keys: 04EE7237B7D453EC
     - run: |
-        sudo apt -y install qemu qemu-kvm qemu-system-arm qemu-user qemu-user-static
+        sudo apt -y install qemu-user-static
     # - run: |
     #     cat /etc/apt/sources.list
     #     sudo echo "deb-src http://azure.archive.ubuntu.com/ubuntu/ focal main restricted" >> /etc/apt/sources.list
