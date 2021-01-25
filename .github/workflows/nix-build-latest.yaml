@@ -64,7 +64,6 @@ jobs:
     - name: Test aarch64-linux
       run: |
         cat /proc/sys/fs/binfmt_misc/qemu-aarch64
-        qemu-user-static/bin/qemu-aarch64-static --version
         /usr/bin/qemu-aarch64-static --version
     - run: nix-build '<nixpkgs/nixos>' -A config.system.build.sdImage -I nixos-config=./configuration.default.sdImage.nix --argstr system aarch64-linux --option sandbox false
     - uses: actions/upload-artifact@v2
