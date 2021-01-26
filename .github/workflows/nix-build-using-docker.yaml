@@ -1,4 +1,4 @@
-name: Nix Build On Demand
+name: nix-build-on-demand-docker
 on:
   workflow_dispatch:
     inputs:

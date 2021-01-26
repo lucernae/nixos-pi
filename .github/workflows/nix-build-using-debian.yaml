@@ -1,5 +1,5 @@
 # Just a sample workflow if using debian packages for binfmt
-name: Nix Build On Demand
+name: nix-build-on-demand-debian
 on:
   workflow_dispatch:
 jobs:
