@@ -1,0 +1,9 @@
+.venv
+backup
+etc-dnsmasq.d
+etc-pihole
+
+.env
+docker-compose.override.yml
+result
+sd-image.*
