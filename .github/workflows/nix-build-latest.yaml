@@ -3,7 +3,7 @@ on:
   push:
 jobs:
   use-qemu-docker:
-    if: false
+    if: true
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2.3.4
@@ -15,10 +15,12 @@ jobs:
     - run: cat /etc/nix/nix.conf
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v1
+    - run: |
+        docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
     - name: Test aarch64-linux
       run: |
         cat /proc/sys/fs/binfmt_misc/qemu-aarch64
-        /usr/bin/qemu-aarch64-static --version
+        # /usr/bin/qemu-aarch64-static --version
     - run: nix-build '<nixpkgs/nixos>' -A config.system.build.sdImage -I nixos-config=./configuration.default.sdImage.nix --argstr system aarch64-linux --option sandbox false
     - uses: actions/upload-artifact@v2
       with:
@@ -27,6 +29,7 @@ jobs:
 
   use-qemu-source:
     runs-on: ubuntu-20.04
+    if: false
     steps:
     - uses: actions/checkout@v2.3.4
     - uses: cachix/install-nix-action@v12
