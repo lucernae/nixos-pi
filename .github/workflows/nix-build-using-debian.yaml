@@ -2,8 +2,16 @@
 name: nix-build-on-demand-debian
 on:
   workflow_dispatch:
+    inputs:
+      environmentName:
+        description: Environment name that stores configuration.nix
+        required: true
+        default: default
+      
 jobs:
-  use-qemu-debian:
+  build-default-image:
+    name: Build default image
+    if: ${{ github.event.inputs.environmentName == 'default' }}
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2.3.4
@@ -12,7 +20,8 @@ jobs:
         nix_path: nixpkgs=channel:nixos-20.09
         extra_nix_config: |
           extra-platforms = aarch64-linux
-    - run: cat /etc/nix/nix.conf
+    - name: Check nix.conf
+      run: cat /etc/nix/nix.conf
     - uses: myci-actions/add-deb-repo@4
       with:
         repo: deb http://http.us.debian.org/debian sid main non-free contrib
@@ -20,14 +29,58 @@ jobs:
         keys: 04EE7237B7D453EC
     - run: |
         sudo apt -y install qemu-user-static
-    - name: Test aarch64-linux
+    - name: Test binfmt availability
       run: |
         cat /proc/sys/fs/binfmt_misc/qemu-aarch64
         /usr/bin/qemu-aarch64-static --version
-    - run: |
+    - name: Build SD Image
+      run: |
         nix-build '<nixpkgs/nixos>'  \
           -A config.system.build.sdImage \
           -I nixos-config=./configuration.default.sdImage.nix \
+          --argstr system aarch64-linux \
+          --option sandbox false
+    - uses: actions/upload-artifact@v2
+      with:
+        name: sd-image.img
+        path: ./result/sd-image/*.img*
+
+  build-custom-image:
+    name: Build custom image
+    if: ${{ github.event.inputs.environmentName != 'default' }}
+    runs-on: ubuntu-20.04
+    environment:
+      name: ${{ github.event.inputs.environmentName }}
+    steps:
+    - uses: actions/checkout@v2.3.4
+    - uses: cachix/install-nix-action@v12
+      with:
+        nix_path: nixpkgs=channel:nixos-20.09
+        extra_nix_config: |
+          extra-platforms = aarch64-linux
+    - name: Check nix.conf
+      run: cat /etc/nix/nix.conf
+    - uses: myci-actions/add-deb-repo@4
+      with:
+        repo: deb http://http.us.debian.org/debian sid main non-free contrib
+        repo-name: debian-sid
+        keys: 04EE7237B7D453EC
+    - run: |
+        sudo apt -y install qemu-user-static
+    - name: Test binfmt availability
+      run: |
+        cat /proc/sys/fs/binfmt_misc/qemu-aarch64
+        /usr/bin/qemu-aarch64-static --version
+    - name: Extract configuration from secrets
+      run: |
+        cat << EOF >> configuration.custom.sdImage.nix
+        ${{ secrets.CONFIGURATION_NIX }}
+        EOF
+    - name: Build SD Image
+      run: |
+        nix-build '<nixpkgs/nixos>'  \
+          -A config.system.build.sdImage \
+          -I nixos-config=./configuration.custom.sdImage.nix \
           --argstr system aarch64-linux \
           --option sandbox false
     - uses: actions/upload-artifact@v2
