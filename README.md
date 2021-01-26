@@ -14,7 +14,7 @@ The latest image is on Hydra:
 If the image have extension .img.zst , then you need to uncompress it.
 
 ```bash
-unzstd sd-image.img.zst sd-image.img
+unzstd sd-image.img.zst
 ```
 
 Flash the image to your sd card using dd. Follow the instruction in NixOS [wiki](https://nixos.wiki/wiki/NixOS_on_ARM#Installation_steps) that links to the raspberry pi original docs.
@@ -38,6 +38,26 @@ It is also possible to create different nixos-config file and build it according
 nixos-rebuild test -p test-1 -I nixos-config=./test.nix
 ```
 
+# Building using Github Action
+
+We can leverage Github Action to build our image. We can reuse existing action to setup qemu-user-static and then build and deploy the image as workflow artifact. You can then download the artifact from Github, which is the zipped sd-image.img file.
+
+I already setup a workflow manual dispatch Github Action in this repo, so to build your own customized NixOS raspi image, follow this steps.
+
+1. Fork the repo so you can build your own custom image
+2. Create your build/deployment environment. 
+
+From your repo settings page, click the Environments menu. Click New environment. Give it a name other than `default`. Define environment secrets called `CONFIGURATION_NIX`. The content should be your sd Image Nix recipe (not your future NixOS configuration.nix). See the sample template file in: [configuration.default.sdImage.nix](configuration.default.sdImage.nix) or [configuration.sdImage.nix](configuration.sdImage.nix)
+
+3. Run your workflow
+
+In the Actions page, select `nix-build-on-demand-docker` action and then click `Run workflow`. You will be given an option to specify the environment name. Fill in the name of the environment you set up in step 2. Click Run workflow. If you use `default` environment name, it will build [configuration.default.sdImage.nix](configuration.default.sdImage.nix) as the recipe.
+
+4. Wait for it to finish
+
+5. Retrieve the artifact
+
+When the build finish, in your action job page, there will be Artifacts panel with artifacts named `sd-image.img`. Click on it and it will download a zipped file. Extract the zipfile and it will contain the image, as `.img` or `.img.zstd` depending on your config you provided.
 
 # Building on x86/64 machine
 
@@ -46,10 +66,16 @@ For example, it may include your own initial service like SSH, or network config
 
 You need NixOS or just Nix package manager
 
-You need QEMU ARM if you only have Nix. For example to use it in Ubuntu:
+You need QEMU ARM if you only have Nix. 
+
+## Example in Ubuntu
+
+For example to use it in Ubuntu:
+
+*notes* for some reason, sd image build failed to build if we are using latest Linux kernel (5.4 currently). So, we need to use latest QEMU user-static that is available on debian sid (currently) or QEMU user-static version 5.x.x. Adding the repository is beyond the scope of this README and please do so if you understand that it is coming from and unstable apt repo.
 
 ```bash
-sudo apt -y install qemu qemu-kvm qemu-system-arm qemu-user qemu-user-static
+sudo apt -y install qemu-user-static
 ```
 
 Since we are going to run aarch64 binaries inside our x86_64 box, we need qemu-user-static to run aarch64 executable transparently.
@@ -98,6 +124,21 @@ Boot your pi and access it (via Keyboard + HDMI, or over SSH), then you need to 
 The nixos config that you made for building the image is for installation image, meanwhile you may have different nixos config after that.
 Typical configuration includes deleting the import lines for sd-image (So you don't rebuild image again), specifying basic fs mount (or additionally swap).
 
+## Example in NixOS
+
+If you have NixOS, adding binfmt support is super easy.
+
+Just add the binfmt support in your `/etc/nixos/configuration.nix`
+
+```
+# add this line inside the nix function
+  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+```
+
+Then, `nixos-rebuild switch` your configuration and your NixOS is ready to be used for cross-compilation.
+
+The rest of the steps are the same with the Ubuntu example above after installing `qemu-user-static`
+
 # Building on ARM machine with Linux
 
 Same as above, but you don't need to install QEMU. You just need Nix or NixOS.
@@ -105,9 +146,34 @@ Same as above, but you don't need to install QEMU. You just need Nix or NixOS.
 The build command:
 
 ```
+# notice that we don't need to specify --argstr system aarch64-linux
 nix-build '<nixpkgs/nixos>' -A config.system.build.sdImage -I nixos-config=./configuration.sdImage.nix \
   --option sandbox false
 ```
+
+# Building using Docker
+
+Theoritically we can also build cross-platform using Docker container. 
+Normally this is used to build cross platform docker images, but we can also use it to build cross-platform in the host.
+
+You need docker or podman installed as a prerequisite.
+
+First we need to register the binfmt from a docker image. We use this repository: [https://hub.docker.com/r/multiarch/qemu-user-static](https://hub.docker.com/r/multiarch/qemu-user-static).
+
+```bash
+docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+```
+
+The trick works like this. Normally the image above is used to register qemu-user-static interpreter inside the container. Since `/proc/sys/fs/binfmt_misc` are the same in the host and container, if the image were run using `--privileged`, then the binfmt in the host are also registered with the binaries inside the docker image. So basically the docker image serves as a convenient packaging library for qemu-user-static.
+
+According to the documentation, the `-p yes` flag tells the image to register the binfmt and persists it even if the container exits. So the interpreter are also available in the host kernel. However you can't check the interpreter version directly in the host, since the binaries don't exists in the host (but in the image above). To check the version, the author uses the convention like this:
+
+```bash
+# supply the platform as image tag, e.g. aarch64
+docker run --rm --privileged multiarch/qemu-user-static:aarch64 /usr/bin/qemu-aarch64-static --version
+```
+
+Now your kernel can execute aarch64 binaries and you can cross-compile. There rest of the steps are the same.
 
 # Reference
 
