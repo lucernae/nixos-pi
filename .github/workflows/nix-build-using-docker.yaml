@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v3.2.0
-    - uses: cachix/install-nix-action@v18
+    - uses: cachix/install-nix-action@v19
       with:
         nix_path: nixpkgs=channel:nixos-20.09
         extra_nix_config: |
@@ -47,7 +47,7 @@ jobs:
       name: ${{ github.event.inputs.environmentName }}
     steps:
     - uses: actions/checkout@v3.2.0
-    - uses: cachix/install-nix-action@v18
+    - uses: cachix/install-nix-action@v19
       with:
         nix_path: nixpkgs=channel:nixos-20.09
         extra_nix_config: |
