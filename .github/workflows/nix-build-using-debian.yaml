@@ -22,7 +22,7 @@ jobs:
           extra-platforms = aarch64-linux
     - name: Check nix.conf
       run: cat /etc/nix/nix.conf
-    - uses: myci-actions/add-deb-repo@10
+    - uses: myci-actions/add-deb-repo@11
       with:
         repo: deb http://http.us.debian.org/debian sid main non-free contrib
         repo-name: debian-sid
@@ -60,7 +60,7 @@ jobs:
           extra-platforms = aarch64-linux
     - name: Check nix.conf
       run: cat /etc/nix/nix.conf
-    - uses: myci-actions/add-deb-repo@10
+    - uses: myci-actions/add-deb-repo@11
       with:
         repo: deb http://http.us.debian.org/debian sid main non-free contrib
         repo-name: debian-sid
