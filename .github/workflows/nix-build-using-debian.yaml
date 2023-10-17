@@ -14,7 +14,7 @@ jobs:
     if: ${{ github.event.inputs.environmentName == 'default' }}
     runs-on: ubuntu-22.04
     steps:
-    - uses: actions/checkout@v3.5.3
+    - uses: actions/checkout@v4.1.1
     - uses: cachix/install-nix-action@v20
       with:
         nix_path: nixpkgs=channel:nixos-20.09
@@ -52,7 +52,7 @@ jobs:
     environment:
       name: ${{ github.event.inputs.environmentName }}
     steps:
-    - uses: actions/checkout@v3.5.3
+    - uses: actions/checkout@v4.1.1
     - uses: cachix/install-nix-action@v20
       with:
         nix_path: nixpkgs=channel:nixos-20.09
