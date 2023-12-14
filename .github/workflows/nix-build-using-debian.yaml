@@ -40,7 +40,7 @@ jobs:
           -I nixos-config=./configuration.default.sdImage.nix \
           --argstr system aarch64-linux \
           --option sandbox false
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       with:
         name: sd-image.img
         path: ./result/sd-image/*.img*
@@ -83,7 +83,7 @@ jobs:
           -I nixos-config=./configuration.custom.sdImage.nix \
           --argstr system aarch64-linux \
           --option sandbox false
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       with:
         name: sd-image.img
         path: ./result/sd-image/*.img*
