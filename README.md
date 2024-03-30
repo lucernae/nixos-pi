@@ -99,7 +99,7 @@ The nix file must import the SD Image packages
 {
 
   imports = [
-    <nixpkgs/nixos/modules/installer/cd-dvd/sd-image-aarch64.nix>
+    <nixos/nixos/modules/installer/cd-dvd/sd-image-aarch64.nix>
   ];
   
   # Do not compress the image as we want to use it straight away
@@ -114,7 +114,7 @@ See example in: [configuration.sdImage.nix](configuration.sdImage.nix)
 Then build the image:
 
 ```
-nix-build '<nixpkgs/nixos>' -A config.system.build.sdImage -I nixos-config=./configuration.sdImage.nix \
+nix-build '<nixos/nixos>' -A config.system.build.sdImage -I nixos-config=./configuration.sdImage.nix \
   --argstr system aarch64-linux \
   --option sandbox false
 ```
@@ -147,7 +147,7 @@ The build command:
 
 ```
 # notice that we don't need to specify --argstr system aarch64-linux
-nix-build '<nixpkgs/nixos>' -A config.system.build.sdImage -I nixos-config=./configuration.sdImage.nix \
+nix-build '<nixos/nixos>' -A config.system.build.sdImage -I nixos-config=./configuration.sdImage.nix \
   --option sandbox false
 ```
 

@@ -6,4 +6,9 @@ etc-pihole
 .env
 docker-compose.override.yml
 result
+output
+.direnv
+.DS_Store
 sd-image.*
+
+.idea
