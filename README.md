@@ -7,7 +7,7 @@ Model:
 
 # Using prebuilt image available on Hydra
 
-The latest image is on Hydra:
+The latest image is on Hydra (example. You might need to change NixOS version in the following URL):
 
 [sd-image](https://hydra.nixos.org/job/nixos/release-20.09/nixos.sd_image.aarch64-linux/latest/download-by-type/file/sd-image)
 
@@ -47,7 +47,9 @@ I already setup a workflow manual dispatch Github Action in this repo, so to bui
 1. Fork the repo so you can build your own custom image
 2. Create your build/deployment environment. 
 
-From your repo settings page, click the Environments menu. Click New environment. Give it a name other than `default`. Define environment secrets called `CONFIGURATION_NIX`. The content should be your sd Image Nix recipe (not your future NixOS configuration.nix). See the sample template file in: [configuration.default.sdImage.nix](configuration.default.sdImage.nix) or [configuration.sdImage.nix](configuration.sdImage.nix)
+From your repo settings page, click the Environments menu. Click New environment. Give it a name other than `default`. Define environment secrets called `CONFIGURATION_NIX`. 
+The content should be your custom `configuration.nix` file.
+This will be imported by the `configuration.sdImage.nix`.
 
 3. Run your workflow
 
@@ -149,6 +151,25 @@ The build command:
 # notice that we don't need to specify --argstr system aarch64-linux
 nix-build '<nixos/nixos>' -A config.system.build.sdImage -I nixos-config=./configuration.sdImage.nix \
   --option sandbox false
+```
+
+# Building using Nix Flake
+
+You must be on a NixOS machine or Nix on Linux. The architecture won't matter.
+
+Following the previous guide on Building in x86_64 or ARM machine with Linux, the command is replaced
+with Nix Flake command.
+
+```shell
+nix build .#nixosConfigurations.raspberry-pi_3.config.system.build.sdImage
+```
+
+Note, that since you can execute nix build on a remote flake, if your `configuration.nix` is already 
+stored in your repo, then you can build locally against remote flake (no need to git clone).
+
+```shell
+# example using this repo as the remote flake address
+nix build github:lucernae/nixos-pi#nixosConfigurations.raspberry-pi_3.config.system.build.sdImage
 ```
 
 # Building using Docker
