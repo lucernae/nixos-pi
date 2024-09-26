@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v4.1.1
-    - uses: cachix/install-nix-action@v26
+    - uses: cachix/install-nix-action@v29
       with:
         nix_path: nixos=channel:nixos-23.05
         extra_nix_config: |
@@ -51,7 +51,7 @@ jobs:
       name: ${{ github.event.inputs.environmentName }}
     steps:
     - uses: actions/checkout@v4.1.1
-    - uses: cachix/install-nix-action@v26
+    - uses: cachix/install-nix-action@v29
       with:
         nix_path: nixos=channel:nixos-23.05
         extra_nix_config: |
