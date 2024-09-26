@@ -12,7 +12,7 @@ jobs:
   build-default-image:
     name: Build default image
     if: ${{ github.event.inputs.environmentName == 'default' }}
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
     - uses: actions/checkout@v4.1.1
     - uses: cachix/install-nix-action@v26
@@ -48,7 +48,7 @@ jobs:
   build-custom-image:
     name: Build custom image
     if: ${{ github.event.inputs.environmentName != 'default' }}
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     environment:
       name: ${{ github.event.inputs.environmentName }}
     steps:
