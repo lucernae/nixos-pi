@@ -127,7 +127,7 @@
     wireless.enable = true;
     wireless.interfaces = [ "wlan0" ];
     # If you want to connect also via WIFI to your router
-    # wireless.networks."SATRIA".psk = "wifipassword";
+    wireless.networks."coldspot".psk = "helloworld1";
     # You can set default nameservers
     # nameservers = [ "192.168.100.3" "192.168.100.4" "192.168.100.1" ];
     # You can set default gateway
@@ -163,9 +163,6 @@
       extraGroups = [ "wheel" "docker" ];
     };
   };
-  users.users.root.openssh.authorizedKeys.keys = [
-    # This is my public key
-    "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDqlXJv/noNPmZMIfjJguRX3O+Z39xeoKhjoIBEyfeqgKGh9JOv7IDBWlNnd3rHVnVPzB9emiiEoAJpkJUnWNBidL6vPYn13r6Zrt/2WLT6TiUFU026ANdqMjIMEZrmlTsfzFT+OzpBqtByYOGGe19qD3x/29nbszPODVF2giwbZNIMo2x7Ww96U4agb2aSAwo/oQa4jQsnOpYRMyJQqCUhvX8LzvE9vFquLlrSyd8khUsEVV/CytmdKwUUSqmlo/Mn7ge/S12rqMwmLvWFMd08Rg9NHvRCeOjgKB4EI6bVwF8D6tNFnbsGVzTHl7Cosnn75U11CXfQ6+8MPq3cekYr lucernae@lombardia-N43SM"
-  ];
+  users.users.root.openssh.authorizedKeys.keys = [];
   system.stateVersion = "23.05";
 }
