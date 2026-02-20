@@ -38,7 +38,7 @@ jobs:
     - name: Build SD Image
       run: |
         nix build .#nixosConfigurations.raspberry-pi_3_default.config.system.build.sdImage
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v6
       with:
         name: sd-image.img
         path: ./result/sd-image/*.img*
@@ -80,7 +80,7 @@ jobs:
     - name: Build SD Image
       run: |
         nix build .#nixosConfigurations.raspberry-pi_3_default.config.system.build.sdImage
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v6
       with:
         name: sd-image.img
         path: ./result/sd-image/*.img*
